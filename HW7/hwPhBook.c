@@ -24,24 +24,29 @@ int main (){
 
 struct PhRec  r;
 struct PhRec * rec1 = &r;
-enum Mode {ADD=1, VIEW, SEARCH}; //Режим работы справочника
+enum Mode {ADD=1, VIEW, SEARCH, EXT}; //Режим работы справочника
 enum Mode mod;
+int et = 0;
 
-printf ("Выберите режим работы Телефонного справочника:\n");
-printf ("1 - Режим ввода новых данных;\n");
-printf ("2 - Вывод всех записей справочника на экран;\n");
-printf ("3 - Режим поиска;\n");
+do {
 
-scanf ("%d", &mod);
+ printf ("Выберите режим работы Телефонного справочника:\n");
+ printf ("1 - Режим ввода новых данных;\n");
+ printf ("2 - Вывод всех записей справочника на экран;\n");
+ printf ("3 - Режим поиска;\n");
+ printf ("4 - Выход;\n");
 
-switch (mod){
+ scanf ("%d", &mod);
 
-case (ADD): printf("Add\n"); AddRec(rec1); break;
-case (VIEW): printf("View\n"); ViewRec(); break;
-case (SEARCH):printf("Search\n"); /*SearchRec();*/ break;
-default : printf("Выбранный режим работы не реализован!\n"); break;
+ switch (mod){
 
-};
+ case (ADD): printf("Add\n"); AddRec(rec1); break;
+ case (VIEW): printf("View\n"); ViewRec(); break;
+ case (SEARCH): printf("Search\n"); /*SearchRec();*/ break;
+ case (EXT): printf("Exit\n"); et = 1; break;
+ default : printf("Выбранный режим работы не реализован!\n"); break;
+ };
+} while (!et);
 
 return 0;
 }
@@ -50,7 +55,14 @@ return 0;
 int AddRec(struct PhRec * recordAdd)
 {
 	FILE *f;
+	int wrt=0; // переменная  для  записи введенных пользователем данных в телефонную книгу 0-нет, 1-да
+	int  ext = 0; // переменная для выхода из цикла  ввода данных в телефонную книгу
+	char ans[3]={'0'};
 
+	if (!(f=fopen("PhoneBook.txt","a+t")))
+        return 1;
+
+	do {
 	printf ("Введите фамилию:  ");
 	scanf ("%s", recordAdd->fam);
 
@@ -62,13 +74,36 @@ int AddRec(struct PhRec * recordAdd)
 
 	printf ("Введите номер телефона:  ");
 	scanf ("%s", recordAdd->phnum);
+	printf ("Введенные Вами данные будут внесены в Телефонную книгу. \n");
+	printf ("Фамилия : %s\n",recordAdd->fam);
+	printf ("Имя : %s\n", recordAdd->name);
+	printf ("Отчество : %s\n", recordAdd->sername);
+	printf ("Телефон : %s\n", recordAdd->phnum);
 
-	if (!(f=fopen("PhoneBook.txt","a+t")))
-  	return 1;
+	printf ("Вы согласны с записью данных ? (Yes/No)\n");
 
+   an1 : scanf ("%s",ans);
+	if (ans[0] == 'Y') wrt = 1;
+	else if(ans[0] == 'N') wrt = 0;
+	else { printf ("Ваш ответ не понятен. (Yes/No)? ");
+	       goto an1;}
+  
+	if (wrt) 
+	    {
+              fprintf(f,"\n %s %s %s ; %s", recordAdd->fam, recordAdd->name, recordAdd->sername, recordAdd->phnum);
 
-	fprintf(f,"\n %s %s %s ; %s", recordAdd->fam, recordAdd->name, recordAdd->sername, recordAdd->phnum);
-//	printf ("\n Вносится значение : %s %s %s ; %s", recordAdd->fam, recordAdd->name, recordAdd->sername, recordAdd->phnum);
+	      printf ("Данные записаны !\n");
+		}
+	printf ("Хотите продолжить вводить данные ? (Yes/No)\n");
+  an2:	scanf ("%s",ans);
+	if (ans[0] == 'Y') ext = 1;
+        else if (ans[0] == 'N') ext = 0;
+	else { printf ("Ваш ответ не понятен. (Yes/No)? ");
+               goto an2;}
+
+}
+	while (ext);
+
 	fclose(f);
 return 0;
 }
