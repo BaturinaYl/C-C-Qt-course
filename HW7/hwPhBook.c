@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
-#include <ctype.h>
+#include <wctype.h>
 #include <locale.h>
 #include <wchar.h>
 
@@ -43,7 +43,7 @@ int main (){
 
    phrec rru;
    phrec * recR = &rru;
-   enum Mode { ADD=1, VIEW, SEARCH, EXT}; //Режим работы справочника
+   enum Mode { ADD = 1, VIEW, SEARCH, EXT}; //Режим работы справочника
    enum Mode mod;
    int ext_m = 0;
    unsigned int BIG;  //количество  записей в файле
@@ -62,28 +62,28 @@ int main (){
 
 	precR = SortRec ( precR, BIG);
 
-	printf ("\n");
-	printf ("Выберите режим работы Телефонного справочника\n");
-	printf ("\n");
- 	printf ("1 - Режим ввода новых данных;\n");
- 	printf ("2 - Вывод всех записей справочника на экран;\n");
- 	printf ("3 - Режим поиска;\n");
- 	printf ("4 - Выход;\n");
-	printf ("\n");
+	wprintf (L"\n");
+	wprintf (L"Выберите режим работы Телефонного справочника\n");
+	wprintf (L"\n");
+ 	wprintf (L"1 - Режим ввода новых данных;\n");
+ 	wprintf (L"2 - Вывод всех записей справочника на экран;\n");
+ 	wprintf (L"3 - Режим поиска;\n");
+ 	wprintf (L"4 - Выход;\n");
+	wprintf (L"\n");
 
- 	scanf ("%d", &mod);
+ 	wscanf (L"%d", &mod);
 
 	switch (mod){
 
- 	case (ADD): AddRec(recR); break;
+ 	case(ADD): AddRec(recR); break;
 
-	case (VIEW): ViewRec(precR, BIG); break;
+	case(VIEW): ViewRec(precR, BIG); break;
 
-	case (SEARCH): SearchRec(precR, BIG); break;
+	case(SEARCH): SearchRec(precR, BIG); break;
 
-	case (EXT): printf("До встречи !\n"); ext_m = 1; break;
+	case(EXT): wprintf (L"До встречи !\n"); ext_m = 1; break;
 
-	default : printf("Выбранный режим работы не реализован!\n"); break;
+	default : wprintf (L"Выбранный режим работы не реализован!\n"); break;
  	};
 
 	free (precR);
@@ -99,56 +99,56 @@ int AddRec (phrec * rec)
   FILE *f;
   int wrt = 0; // переменная  для  записи введенных пользователем данных в телефонную книгу 0-нет, 1-да
   int ext_a = 0; // переменная для выхода из цикла  ввода данных в телефонную книгу
-  char ans[4] = {'0'};
+  wchar_t ans[4];
 
-  if (!(f = fopen("PhoneBook.txt","a+t")))  return 1;
-  printf ("\n");
+  if (!(f = fopen("PhoneBook.txt","a+t")))  return (1);
+  wprintf (L"\n");
 
   do {
-	printf ("Введите фамилию:  ");
-	scanf ("%s", rec->fam);
+	wprintf (L"Введите фамилию:  ");
+	wscanf (L"%ls", rec->fam);
 
-	printf ("Введите имя:  ");
-	scanf ("%s", rec->name);
+	wprintf (L"Введите имя:  ");
+	wscanf (L"%ls", rec->name);
 
-	printf ("Введите отчество:  ");
-	scanf ("%s", rec->sername );
+	wprintf (L"Введите отчество:  ");
+	wscanf (L"%ls", rec->sername );
 
-	printf ("Введите номер телефона:  ");
-	scanf ("%s", rec->phnum);
+	wprintf (L"Введите номер телефона:  ");
+	wscanf (L"%ls", rec->phnum);
 
-	printf ("\n");
-	printf ("Введенные Вами данные будут внесены в Телефонную книгу. \n");
-	printf ("Фамилия : %s\n",rec->fam);
-	printf ("Имя : %s\n", rec->name);
-	printf ("Отчество : %s\n", rec->sername);
-	printf ("Телефон : %s\n", rec->phnum);
-	printf ("\n");
+	wprintf (L"\n");
+	wprintf (L"Введенные Вами данные будут внесены в Телефонную книгу. \n");
+	wprintf (L"Фамилия : %ls\n",rec->fam);
+	wprintf (L"Имя : %ls\n", rec->name);
+	wprintf (L"Отчество : %ls\n", rec->sername);
+	wprintf (L"Телефон : %ls\n", rec->phnum);
+	wprintf (L"\n");
 
-	printf ("Вы согласны с записью данных ? (Да/Нет)\n");
+	wprintf (L"Вы согласны с записью данных ? (Да/Нет)\n");
 
 	for (;;)
           {
-            scanf("%s", &ans);
-	    if (strcmp (ans, "Да")==0) {wrt = 1; break;}
-            else if (strcmp (ans,"Нет")==0) {wrt = 0; break;}
-            else  printf ("Ваш ответ не понятен. (Да/Нет)? ");
+            wscanf (L"%ls", &ans);
+	    if (wcscmp (ans, L"Да")==0) {wrt = 1; break;}
+            else if (wcscmp (ans,L"Нет")==0) {wrt = 0; break;}
+            else  wprintf (L"Ваш ответ не понятен. (Да/Нет)? ");
             }
 
 	if (wrt)
 	    {
-              fprintf(f,"\n %s %s %s ; %s", rec->fam, rec->name, rec->sername, rec->phnum);
-	      printf ("Данные записаны !\n");
-	      printf ("\n");
+              fwprintf(f,L"\n %ls %ls %ls ; %ls", rec->fam, rec->name, rec->sername, rec->phnum);
+	      wprintf (L"Данные записаны !\n");
+	      wprintf (L"\n");
         	}
 
-	printf ("Хотите продолжить вводить данные ? (Да/Нет)\n");
+	wprintf (L"Хотите продолжить вводить данные ? (Да/Нет)\n");
         for (;;)
 	  {
-	   scanf ("%s",&ans);
-	   if (strcmp(ans, "Да")==0) {ext_a = 1; break;}
-           else if (strcmp(ans, "Нет") ==0) {ext_a = 0; break;}
-	   else  printf ("Ваш ответ не понятен. (Да/Нет)? ");
+	   wscanf (L"%ls",&ans);
+	   if (wcscmp(ans, L"Да")==0) {ext_a = 1; break;}
+           else if (wcscmp(ans, L"Нет") ==0) {ext_a = 0; break;}
+	   else  wprintf (L"Ваш ответ не понятен. (Да/Нет)? ");
           }
 
     } while (ext_a);
@@ -159,23 +159,23 @@ int AddRec (phrec * rec)
 //--------------------------------------------------------------------
 int SearchRec ( phrec *pr, int numr)  // поиск записи в массиве
 {
-  enum Schmod {FM=1, NM=2, SN=3, PH=4, EX=5};  // Режимы поиска данных
+  enum Schmod {FM = 1, NM, SN, PH, EX};  // Режимы поиска данных
   enum Schmod  modsch;
   int  ext_s = 0;
 
   do {
-	printf ("\n");
-	printf ("Выберите режим поиска. \n");
-	printf ("\n");
+	wprintf (L"\n");
+	wprintf (L"Выберите режим поиска. \n");
+	wprintf (L"\n");
 
-	printf ("1 - Режим поиска по Фамилии;\n");
-        printf ("2 - Режим поиска по Имени;\n");
-        printf ("3 - Режим поиска по Отчеству;\n");
-        printf ("4 - Режим поиска по Номеру Телефона;\n");
-	printf ("5 - Выход;\n");
-	printf ("\n");
+	wprintf (L"1 - Режим поиска по Фамилии;\n");
+        wprintf (L"2 - Режим поиска по Имени;\n");
+        wprintf (L"3 - Режим поиска по Отчеству;\n");
+        wprintf (L"4 - Режим поиска по Номеру Телефона;\n");
+	wprintf (L"5 - Выход;\n");
+	wprintf (L"\n");
 
-        scanf ("%d", &modsch);
+        wscanf (L"%d", &modsch);
 
         switch (modsch){
 
@@ -184,7 +184,7 @@ int SearchRec ( phrec *pr, int numr)  // поиск записи в массив
  	case (SN): Sch (pr, numr,3); break;
  	case (PH): Sch (pr, numr,4); break;
  	case (EX): ext_s = 1; break;
- 	default : printf("\n Выбранный режим поиска не реализован!\n"); break;
+ 	default : wprintf (L"\n Выбранный режим поиска не реализован!\n"); break;
          };
 
       } while (!ext_s);
@@ -198,68 +198,73 @@ int Sch (phrec *pr, int num, int mod)
   int k = 0;       // количество символов в образце
   wchar_t ch1[NMAX];
   wchar_t ch2[NMAX];
+  wchar_t *p1, *p2 ;
   int cmp ;
   int  ext_s = 1; // переменная для выхода из цикла  поиска
-  char ans[4] = {'0'};
-
+  wchar_t ans[4];
+  int   tst = 0;
   do {
-	printf ("\n");
-	printf ("Введите Образец для поиска (Строку или часть строки). Но не более %d символов !\n", NMAX);
-	printf ("\n");
+	wprintf (L"\n");
+	wprintf (L"Введите Образец для поиска (Строку или часть строки). Но не более %d символов !\n", NMAX);
+	wprintf (L"\n");
 
-	scanf ("%s",expl);
-	k = strlen (expl);
-	printf ("\n");
-	printf("Результат поиска :\n");
-        for (int i = 0; i < num; i++)
+	wscanf (L"%ls",&expl);
+	size_t k = wcslen (expl);
+	wprintf (L"\n");
+	wprintf (L"Результат поиска  :\n");
+
+	for (int i = 0; i < num; i++)
           {
-           for (int l = 0; l < k; l++)
+	    switch (mod){
+                                        //переводим сиволы в верхний регист для сравнения
+                   case (1): wcsncpy( ch2, pr[i].fam, k);  break;
+                   case (2): wcsncpy( ch2, pr[i].name, k); break;
+                   case (3): wcsncpy( ch2, pr[i].sername, k); break;
+                   case (4): wcsncpy( ch2, pr[i].phnum, k); break;
+                   }
+	    p2 = ch2;
+	    for (p1 = expl; *p1!= L'\0'; p1++ , p2++)
              {
-              ch1[l] = toupper (expl[l]);
-              switch (mod){
-                                       //переводим сиволы в верхний регист для сравнения
-                     case (1) :ch2[l] = toupper (pr[i].fam[l]); break;
-                     case (2): ch2[l] = toupper (pr[i].name[l]); break;
- 	             case (3): ch2[l] = toupper (pr[i].sername[l]); break;
-                     case (4): ch2[l] = toupper (pr[i].phnum[l]); break;
-                     }
-              } // for l
-             printf ("\n");
-             cmp = strncmp (ch1, ch2, k);  // сравниваем первые К символов в образце для поска и считанной подстроке
-            if ( cmp == 0)  // сравниваемые элементы совпали
+               *p1 = (wchar_t) towupper(*p1);
+
+               *p2 = (wchar_t) towupper (*p2);
+              } // for p1
+	 wprintf(L" \n");
+         cmp = wcsncmp (expl, ch2, k);  // сравниваем первые К символов в образце для поска и считанной подстроке
+             if ( cmp == 0)  // сравниваемые элементы совпали
              {
-              printf("\n-- %s %s %s %s --\n", pr[i].fam, pr[i].name, pr[i].sername, pr[i].phnum);
+              wprintf( L"\n-- %ls %ls %ls %ls --\n", pr[i].fam, pr[i].name, pr[i].sername, pr[i].phnum);
 	      }   // if cmp
            }   // for i
 
-	printf ("\n");
-	printf ("Хотите продолжить поиск в выбранном Вами режиме? (Да/Нет)\n");
+	wprintf( L"\n");
+	wprintf( L"Хотите продолжить поиск в выбранном Вами режиме? (Да/Нет)\n");
         for (;;)
           {
-           scanf ("%s",&ans);
-           if (strcmp(ans, "Да")==0) {ext_s = 1; break;}
-           else if (strcmp(ans, "Нет") ==0) {ext_s = 0; break;}
-           else  printf ("Ваш ответ не понятен. (Да/Нет)? ");
+           wscanf (L"%ls",&ans);
+           if (wcscmp(ans, L"Да")==0) {ext_s = 1; break;}
+           else if (wcscmp(ans, L"Нет") ==0) {ext_s = 0; break;}
+           else  wprintf (L"Ваш ответ не понятен. (Да/Нет)? ");
           }
-  } while (ext_s); 
+     } while (ext_s); 
   return 0;
 }
 //-------------------------------------------------------------------
-int ViewRec(phrec *pr, int numr)
+int ViewRec( phrec *pr, int numr)
 {
-  int k; 
+  int k;
 
-	printf ("\n");
-	printf("Телефонный справочник: \n");
+	wprintf (L"\n");
+	wprintf (L"Телефонный справочник: \n");
 
-	for (int i=0; i<numr; i++)
+	for (int i = 0; i < numr; i++)
 	   {
-              printf("\n %d.  %s %s %s  тел: %s \n", k=i+1, pr[i].fam, pr[i].name, pr[i].sername, pr[i].phnum);
+              wprintf (L"\n %d.  %ls %ls %ls  тел: %ls \n", k=i+1, pr[i].fam, pr[i].name, pr[i].sername, pr[i].phnum);
 	    }
 
-	printf(" \n");
-	printf ("В телефонном справочнике %d записей. \n", CountRec());
-	printf ("\n");
+	wprintf (L" \n");
+	wprintf (L"В телефонном справочнике %d записей. \n", CountRec());
+	wprintf (L"\n");
   return (0);
 }
 //--------------------------------------------------------------------
@@ -268,19 +273,19 @@ phrec * ReadRec (phrec *pr, int numr)
   FILE *f;
   wchar_t  st[NMAX];
 
-	if (!(f = fopen("PhoneBook.txt","r+t"))) return 1;
+	if (!(f = fopen("PhoneBook.txt","r+t"))) return 0;
 
-        for (int i=0; i<numr; i++)
-        {
-           fscanf (f, "%s", &pr[i].fam);
+        for (int i = 0; i < numr; i++)
+         {
+           fwscanf (f, L"%ls", &pr[i].fam);
 
-           fscanf (f, "%s", &pr[i].name);
+           fwscanf (f, L"%ls", &pr[i].name);
 
-           fscanf (f, "%s", &pr[i].sername);
+           fwscanf (f, L"%ls", &pr[i].sername);
 
-           fscanf (f, "%s", &st);
+           fwscanf (f, L"%ls", &st);
 
-           fscanf (f, "%s", &pr[i].phnum);
+           fwscanf (f, L"%ls", &pr[i].phnum);
         }
         fclose(f);
   return (pr);
@@ -290,7 +295,7 @@ phrec * ReadRec (phrec *pr, int numr)
 //------------------------------------------------------------------
 int  CountRec()
 {
-  FILE * fl; 
+  FILE * fl;
   int n = 0;
   wchar_t s[NMAX];
 
@@ -298,9 +303,9 @@ int  CountRec()
 
         while(!(feof(fl)))
         {
-          for (int i=0; i<5; i++)
-           { 
-             fscanf(fl,"%s", s);
+          for (int i = 0; i < 5; i++)
+           {
+             fwscanf( fl, L"%ls", s);
             }
   	  n++;
          }
@@ -319,33 +324,33 @@ phrec * SortRec (phrec *pr, int numr)
   phrec stmp;
   phrec * tmp = &stmp;
 
-	for (int k=1; k < NMAX-2; k++)
+	for (int k = 1; k < NMAX-2; k++)
           {
-	   for (int i=0; i<numr-1; i++)
+	   for (int i = 0; i < numr-1; i++)
 	     {
-              for (int l=0; l<k; l++)
+              for (int l = 0; l < k; l++)
 		{
-                  ch1[l] = toupper (pr[i].fam[l]);
-	          ch2[l] = toupper (pr[i+1].fam[l]);
+                  ch1[l] = (pr[i].fam[l]);
+	          ch2[l] = (pr[i+1].fam[l]);
 		}
-	      cmp = strncmp (ch1, ch2, k);
+	      cmp = wcsncasecmp (ch1, ch2, k);
               if ( cmp > 0)
 	        {
-	         for(int j=0; j < NMAX;j++)
+	         for(int j = 0; j < NMAX;j++)
 	           {
-			tmp->fam[j]=pr[i].fam[j];
+			tmp->fam[j] = pr[i].fam[j];
 			pr[i].fam[j] = pr[i+1].fam[j];
 			pr[i+1].fam[j] = tmp->fam[j];
 
-			tmp->name[j]=pr[i].name[j];
+			tmp->name[j] = pr[i].name[j];
               		pr[i].name[j] = pr[i+1].name[j];
               		pr[i+1].name[j] = tmp->name[j];
 
-	      		tmp->sername[j]=pr[i].sername[j];
+	      		tmp->sername[j] = pr[i].sername[j];
               		pr[i].sername[j] = pr[i+1].sername[j];
         		 pr[i+1].sername[j] = tmp->sername[j];
 
-	      		tmp->phnum[j]=pr[i].phnum[j];
+	      		tmp->phnum[j] = pr[i].phnum[j];
               		pr[i].phnum[j] = pr[i+1].phnum[j];
              		pr[i+1].phnum[j] = tmp->phnum[j];
 
