@@ -1,15 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
+#define ARR_MAX 10000  // размер массива
+#define TEST_MAX 10   // количество испытаний
 
-#define ARR_MAX 10000
-#define TEST_MAX 10
-
-double Bubble_sort ( int *, int);
-double MinSel_sort ( int *, int);
-double Insert_sort ( int *, int);
-double Hoare_sort (int *, int, int);
+int    Min_sort( double *, int ); // поиск мин. результата
+int    Max_sort( double *, int );  // поиск макс. результата
+double Bubble_sort ( int *, int); // метод Пузырька
+double MinSel_sort ( int *, int);  // метод мин.элемента
+double Insert_sort ( int *, int); // метод вставка
+double Hoare_sort (int *, int, int);  // метод Хора (qsort)
 
 int main()
 {
@@ -20,14 +22,21 @@ int main()
  int irrS[ARR_MAX];
  int hrrS[ARR_MAX];
 
- double arrRes [4][TEST_MAX + 1];
+ double arrRes [4][TEST_MAX]; // массив результатов измерений времени работы методов
+ double Res [4]; 
+ double *pRes = Res;
 
  double bAVR = 0.0;
  double mAVR = 0.0;
  double iAVR = 0.0;
  double hAVR = 0.0;
 
- for (int t = 0; t < TEST_MAX; t++){
+ char st[20] = " ";
+ char st1[20] =" ";
+ int k, h;
+
+   // создаем 4 идентичных массива 
+for (int t = 0; t < TEST_MAX; t++){
 
       srand (time(NULL));
       for (int i = 0; i < ARR_MAX; i++){
@@ -35,34 +44,86 @@ int main()
 	    mrrS[i] = brrS[i];
 	    irrS[i] = brrS[i];
 	    hrrS[i] = brrS[i];
-          }
+      }
 
+  // вызываем методы, результаты заносим в массив, 
+  //  подсчитываем суммарное время для рассчета среднего значения
 	arrRes[0][t] = Bubble_sort (brrS, ARR_MAX); bAVR += arrRes[0][t]; 
 	arrRes[1][t] = MinSel_sort (mrrS, ARR_MAX); mAVR += arrRes[1][t];
 	arrRes[2][t] = Insert_sort (irrS, ARR_MAX); iAVR += arrRes[2][t];
 	arrRes[3][t] = Hoare_sort (hrrS, 0, ARR_MAX-1); hAVR += arrRes[3][t];
 
-   }
+ }
 
-	arrRes[0][TEST_MAX] = bAVR / TEST_MAX;
-        arrRes[1][TEST_MAX] = mAVR / TEST_MAX;
-        arrRes[2][TEST_MAX] = iAVR / TEST_MAX;
-        arrRes[3][TEST_MAX] = hAVR / TEST_MAX;
+   // ноходим среднее значение для каждого метода, результат помещаем в массив 
+	Res[0] = bAVR / TEST_MAX;
+        Res[1] = mAVR / TEST_MAX;
+        Res[2] = iAVR / TEST_MAX;
+        Res[3] = hAVR / TEST_MAX;
+	printf ("-------Результаты -----------\n");
+        printf (" Cp.Вр. сортировки Bubble Sort : %f  сек. \n", Res[0]);
+	printf (" Ср.Вр. сортировки Select Sort : %f  сек. \n", Res[1]);
+	printf (" Ср.Вр. сортировки Insert Sort : %f  сек. \n", Res[2]);
+	printf (" Ср.Вр. сортировки Hoar Sort : %f  сек. \n", Res[3]);
+	printf ("\n");
 
+	switch (Min_sort(pRes, 4))
+        {
+	        case(0): strcat(st, "Bubble Sort"); k = 0; break;
+        	case(1): strcat(st, "Select Sort"); k = 1; break;
+        	case(2): strcat(st, "Insert Sort "); k = 2; break;
+        	case(3): strcat(st,"Hoar Sort ");    k = 3; break;
+        }
 
-        printf (" Cp.Время выболнения сортировки методом Пузырька : %f  сек. \n", arrRes[0][TEST_MAX]);
-	printf (" Ср.Время выболнения сортировки методом Мин.эллемента : %f  сек. \n", arrRes[1][TEST_MAX]);
-	printf (" Ср.Время выболнения сортировки методом Вставки : %f  сек. \n", arrRes[2][TEST_MAX]);
-	printf (" Ср.Время выболнения сортировки методом Хора : %f  сек. \n", arrRes[3][TEST_MAX]);
+	printf ("--Мин. время сортировки (cек.) : %s   %f \n", st, Res[k]);
 
-	
+	switch (Max_sort(pRes, 4))
+        {
+	        case(0): strcat(st1, "Bubble Sort"); h = 0; break;
+        	case(1): strcat(st1, "Select Sort"); h = 1; break;
+        	case(2): strcat(st1, "Insert Sort "); h = 2; break;
+        	case(3): strcat(st1, "Hoar Sort ");    h = 3; break;
+        }
+
+	printf ("--Макс. время сортировки (cек.) : %s   %f \n", st1, Res[h]);
+	printf ("\n");
+
 return (0);
+}
+//--------------------------------------------
+int Min_sort( double *arr, int n)
+{
+
+	double min = arr[0];
+	int k = 0;
+	for (int i = 1; i < n; i++)
+	{
+	  if (arr[i] < min) {
+		min = arr[i];
+		k = i;
+	   }
+	}
+return (k);
+}
+//--------------------------------------------
+int Max_sort( double *arr, int n)
+{
+ double max = arr[0];
+        int k = 0;
+        for (int i = 1; i < n; i++)
+        {
+          if (arr[i] > max) {
+                max = arr[i];
+                k = i;
+           }
+        }
+return (k);
 }
 //--------------------------------------------
 double Bubble_sort (int *arr, int n)
 {
   int tmp;
-   clock_t time_start, time_end;  
+   clock_t time_start, time_end; 
    time_start = clock();
 
 	for (int i = 0; i < n; i++)
